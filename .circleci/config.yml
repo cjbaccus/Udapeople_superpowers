@@ -276,84 +276,144 @@ jobs:
             echo API_URL=$API_URL >> "frontend/.env"
             echo "${API_URL}"
       - run:
+          name: Build frontend
+          command: |
+            cd frontend
+            ls -la
+            cat .env
+            npm run build
+      - aws-cli/setup
+      - run:
           name: Deploy frontend objects
           command: |
-            # your code here
-      # Here's where you will add some code to rollback on failure      
+            aws s3 cp --recursive frontend/dist "s3://uda-super-<< pipeline.parameters.workflow-id >>"
+      - revert-migrations
+      - destroy-environment
                     
   deploy-backend:
     docker:
-      # Docker image here that supports Ansible
+      - image: python:3.7-alpine3.11
     steps:
-      # Checkout code from git
-      # Add ssh keys with fingerprint
-      # attach workspace
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["60:b2:15:be:89:72:b2:51:96:8c:f2:6d:73:36:68:cb"]
+      - attach_workspace:
+          at: ~/
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update ansible openssh-client tar gzip
+      - restore_cache:
+          keys: ["backend-dist"]
       - run:
           name: Deploy backend
           command: |
-            # your code here
-      # Here's where you will add some code to rollback on failure  
+            cd /home
+            tar czvf backend.tar.gz -P /home/circleci/project/backend/dist
+      - run:
+          name: ansible backend
+          command: |
+            export ANSIBLE_HOST_KEY_CHECKING=False
+            ansible-playbook \
+              -i .circleci/ansible/inventory.txt \
+              .circleci/ansible/deploy-backend.yml
+      - run:
+          name: Install AWS CLI for rollback
+          when: on_fail
+          command: |
+            apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
+      - revert-migrations
+      - destroy-environment 
 
   smoke-test:
     docker:
-      # Lightweight Docker image 
+      - image: python:3.7-alpine3.11 
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update curl
+      - attach_workspace:
+          at: ~/
       - run:
           name: Get backend url
           command: |
-            # your code here
+            export BACKEND_URL=$(sed -n 2p .circleci/ansible/inventory.txt)
       - run:
           name: Backend smoke test.
           command: |
-            # your code here
+            if curl -s https://${BACKED_URL}:3030/api/status
+            then
+            return 1
+            else
+            return 0
+            fi
       - run:
           name: Frontend smoke test.
           command: |
-            # your code here
-      # Here's where you will add some code to rollback on failure  
+            URL="http://uda-super-<< pipeline.parameters.workflow-id >>.s3-website-us-east-1.amazonaws.com"
+            echo $URL
+
+            if curl -s ${URL} | grep "Welcome"
+            then
+            return 1
+            else 
+            return 0
+            fi
+      - run:
+          name: Install AWS CLI for rollback
+          when: on_fail
+          command: |
+            apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
+      - revert-migrations
+      - destroy-environment
 
   cloudfront-update:
     docker:
-      # Docker image here that supports AWS CLI
+      - image: python:3.7-alpine3.11 
     steps:
-      # Checkout code from git
+      - checkout
       - run:
           name: Install dependencies
           command: |
-            # your code here
+            apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
+            apk add --update curl
       - run:
           name: Update cloudfront distribution
           command: |
-            # your code here
-      # Here's where you will add some code to rollback on failure  
+            aws cloudformation deploy \
+              --template-file .circleci/files/cloudfront.yml \
+              --stack-name "uda-super-cloudfront" \
+              --parameter-overrides WorkflowID="<< pipeline.parameters.workflow-id >>" \
+              --tags project=uda-super
+      - revert-migrations
+      - destroy-environment
 
 cleanup:
     docker:
-      # Docker image here
+      - image: cimg/base:2021:07
     steps:
-      # Checkout code from git
-      - run:
-          name: Get old stack workflow id
-          command: |
-            # your code here
-            export OldWorkflowID="the id here"
-            export STACKS=[] #put the list of stacks here
+      - checkout
+      - aws-cli/setup
       - run:
           name: Remove old stacks and files
           command: |
-            if [[ "${STACKS[@]}" =~ "${OldWorkflowID}" ]]
+            export OldWorkflowID=$(curl -H "token: << pipeline.parameters.memstash-token >>" --request GET https://api.memstash.io/values/old_workflow_id_${CIRCLE_WORKFLOW_ID})
+            echo "Old Workflow ID: ${OldWorkflowID}"
+
+            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StanckName --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+            echo ${STACKS}
+
+            if [ "${OldWorkflowID}" != "<< pipeline.parameters.workflow-id >>" ]
             then
-              # your code here
+              echo "Cleaning up old junk"
+              aws s3 rm "s3://uda-super-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "uda-super-backend-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "uda-super-frontend-${OldWorkflowID}"
+              echo "Finished cleaning old stacks"
             fi
+
             
 
 workflows:
