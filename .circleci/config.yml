@@ -8,9 +8,9 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm --recursive s3://uda-super-<< pipeline.paramters.workflow-id >>
-            aws clourdformation delete-stack --stack-name "uda-super-backend-<< pipeline.paramters.workflow-id >>"
-            aws clourdformation delete-stack --stack-name "uda-super-frontend-<< pipeline.paramters.workflow-id >>"
+            aws s3 rm --recursive s3://udapeople-<< pipeline.paramters.workflow-id >>
+            aws clourdformation delete-stack --stack-name "udapeople-backend-<< pipeline.paramters.workflow-id >>"
+            aws clourdformation delete-stack --stack-name "udapeople-frontend-<< pipeline.paramters.workflow-id >>"
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow. 
@@ -152,7 +152,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=your-tag \
-              --stack-name "uda-super-backend-<< pipeline.paramters.workflow-id >>" \
+              --stack-name "udapeople-backend-<< pipeline.paramters.workflow-id >>" \
               --parameter-overrides ID="<< pipeline.paramters.workflow-id >>"  
       - run:
           name: Ensure front-end infrastructure exist
@@ -160,14 +160,14 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=your-tag \
-              --stack-name "uda-super-frontend-<< pipeline.paramters.workflow-id >>" \
+              --stack-name "udapeople-frontend-<< pipeline.paramters.workflow-id >>" \
               --parameter-overrides ID="<< pipeline.paramters.workflow-id >>"  
       - run:
           name: Add back-end ip to ansible inventory
           command: |
             aws ec2 describe-instances \
               --query 'Reservations[*].Instances[*].PublicIpAddress' \
-              --filters "Name=tag:project,Values=uda-super" \
+              --filters "Name=tag:project,Values=udapeople" \
               --output text >> .circleci/ansible/inventory.txt
             cat .circleci/ansible/inventory.txt
       - persist_to_workspace:
@@ -286,7 +286,7 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            aws s3 cp --recursive frontend/dist "s3://uda-super-<< pipeline.parameters.workflow-id >>"
+            aws s3 cp --recursive frontend/dist "s3://udapeople-<< pipeline.parameters.workflow-id >>"
       - revert-migrations
       - destroy-environment
                     
@@ -352,7 +352,7 @@ jobs:
       - run:
           name: Frontend smoke test.
           command: |
-            URL="http://uda-super-<< pipeline.parameters.workflow-id >>.s3-website-us-east-1.amazonaws.com"
+            URL="http://udapeople-<< pipeline.parameters.workflow-id >>.s3-website-us-east-1.amazonaws.com"
             echo $URL
 
             if curl -s ${URL} | grep "Welcome"
@@ -384,9 +384,9 @@ jobs:
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/cloudfront.yml \
-              --stack-name "uda-super-cloudfront" \
+              --stack-name "udapeople-cloudfront" \
               --parameter-overrides WorkflowID="<< pipeline.parameters.workflow-id >>" \
-              --tags project=uda-super
+              --tags project=udapeople
       - revert-migrations
       - destroy-environment
 
@@ -408,9 +408,9 @@ cleanup:
             if [ "${OldWorkflowID}" != "<< pipeline.parameters.workflow-id >>" ]
             then
               echo "Cleaning up old junk"
-              aws s3 rm "s3://uda-super-${OldWorkflowID}" --recursive
-              aws cloudformation delete-stack --stack-name "uda-super-backend-${OldWorkflowID}"
-              aws cloudformation delete-stack --stack-name "uda-super-frontend-${OldWorkflowID}"
+              aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+              aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
+              aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
               echo "Finished cleaning old stacks"
             fi
 
