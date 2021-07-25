@@ -301,7 +301,7 @@ jobs:
       - run:
           name: Deploy frontend objects
           command: |
-            aws s3 cp --recursive frontend/dist "s3://udapeople-jsggbl8j7u6xhmny"
+            aws s3 cp --recursive frontend/dist "s3://udapeople-<< pipeline.parameters.workflow-id >>"
       - revert-migrations
       - destroy-environment
                     
@@ -321,22 +321,10 @@ jobs:
       # - restore_cache:
       #     keys: ["backend-dist"]
       - run:
-          name: Moves cache to working directory
-          commands: |
-            cp -r /home/circleci/* ~/
-      - run:
-          name: Install dependencies
-          command: | 
-            apk add --no-cache tar gzip
-            apk add --update ansible
-            apk add --update curl
-            apk add --update jq
-
-      - run:
           name: Deploy backend
           command: |
-            cd ~/project/backend
-            tar -czvf backend.tar.gz -P ./dist
+            cd ~
+            tar czvf backend.tar.gz -P ./dist
       - run:
           name: ansible backend
           command: |
