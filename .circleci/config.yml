@@ -123,7 +123,7 @@ jobs:
           name: Front-end security scan
           command: | 
             cd frontend
-            # npm install
+            npm install
             npm audit fix --audit-level=critical --force
 
       - slack/notify:
