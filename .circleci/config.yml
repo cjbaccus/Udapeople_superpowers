@@ -18,9 +18,9 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm --recursive s3://udapeople-<< pipeline.paramters.workflow-id >>
-            aws clourdformation delete-stack --stack-name "udapeople-backend-<< pipeline.paramters.workflow-id >>"
-            aws clourdformation delete-stack --stack-name "udapeople-frontend-<< pipeline.paramters.workflow-id >>"
+            aws s3 rm --recursive s3://udapeople-<< pipeline.parameters.workflow-id >>
+            aws clourdformation delete-stack --stack-name "udapeople-backend-<< pipeline.parameters.workflow-id >>"
+            aws clourdformation delete-stack --stack-name "udapeople-frontend-<< pipeline.parameters.workflow-id >>"
 
   revert-migrations:
     description: Revert the last migration if successfully run in the current workflow. 
@@ -162,16 +162,16 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=your-tag \
-              --stack-name "udapeople-backend-<< pipeline.paramters.workflow-id >>" \
-              --parameter-overrides ID="<< pipeline.paramters.workflow-id >>"  
+              --stack-name "udapeople-backend-<< pipeline.parameters.workflow-id >>" \
+              --parameter-overrides ID="<< pipeline.parameters.workflow-id >>"  
       - run:
           name: Ensure front-end infrastructure exist
           command: |
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=your-tag \
-              --stack-name "udapeople-frontend-<< pipeline.paramters.workflow-id >>" \
-              --parameter-overrides ID="<< pipeline.paramters.workflow-id >>"  
+              --stack-name "udapeople-frontend-<< pipeline.parameters.workflow-id >>" \
+              --parameter-overrides ID="<< pipeline.parameters.workflow-id >>"  
       - run:
           name: Add back-end ip to ansible inventory
           command: |
