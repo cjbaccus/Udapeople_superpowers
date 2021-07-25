@@ -381,7 +381,6 @@ jobs:
                       }
                     ]
                   }
-                  
       - run:
           name: Install AWS CLI for rollback
           when: on_fail
@@ -410,9 +409,9 @@ jobs:
           command: |
             if curl -s https://${BACKED_URL}:3030/api/status
             then
-            return 1
+              return 1
             else
-            return 0
+              return 0
             fi
       - run:
           name: Frontend smoke test.
@@ -420,11 +419,11 @@ jobs:
             URL="http://udapeople-<< pipeline.parameters.workflow-id >>.s3-website-us-east-1.amazonaws.com"
             echo $URL
 
-            if curl -s ${URL} | grep "Welcome"
+            if curl -s ${URL} | grep "carl"
             then
-            return 1
+              return 1
             else 
-            return 0
+              return 0
             fi
       - run:
           name: Install AWS CLI for rollback
@@ -473,7 +472,7 @@ jobs:
               if [ "${OldWorkflowID}" != "<< pipeline.parameters.workflow-id >>" ]
               then
                 echo "Cleaning up old junk"
-                aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive
+                aws s3 rm "s3://udapeople-jsggbl8j7u6xhmny" --recursive
                 aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
                 aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
                 echo "Finished cleaning old stacks"
