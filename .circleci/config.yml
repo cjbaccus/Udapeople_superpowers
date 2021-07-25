@@ -323,7 +323,7 @@ jobs:
           name: Deploy backend
           command: |
             tar -C backend -czvf artifact.tar.gz .
-            cp -p artifact.tar.gz ~/project/backend/artifact.tar.gz
+            cp -p artifact.tar.gz ~/project/backend_artifact.tar.gz
             ls -alrt
             cat ~/project/.circleci/ansible/inventory.txt
             # cd ~
