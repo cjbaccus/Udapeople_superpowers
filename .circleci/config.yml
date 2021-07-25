@@ -234,7 +234,7 @@ jobs:
       - checkout
       - aws-cli/setup
       - run:
-          name: Run migrations
+          name: Run migrations 
           command: |
             echo ENVIRONMENT=production > "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> "backend/.env"
