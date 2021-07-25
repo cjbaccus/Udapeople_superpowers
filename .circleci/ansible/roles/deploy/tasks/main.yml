@@ -1,12 +1,12 @@
 ---
 - name: "Move backend files to server."
   copy:
-    src: /root/project/backend_artifact.tar.gz
-    dest: ~/home/ubuntu
+    src: ~/project/backend_artifact.tar.gz
+    dest: ~/home/ubuntu/udapeople/
 
 - name: "install package dependencies"
   shell: |
-    cd ~/home/ubuntu
+    cd ~/home/ubuntu/udapeople/
     tar -xzvf backend_artifact.tar.gz -C backend
     rm backend_artifact.tar.gz
     cd backend/
