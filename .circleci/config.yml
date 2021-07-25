@@ -450,7 +450,7 @@ jobs:
             --use-previous-template \
             --stack-name udapeople-cloudfront \
             --parameters 
-              ParameterKey="<< pipeline.parameters.workflow-id >>", ParameterValue=$CIRCLE_WORKFLOW_ID, UsePreviousValue=false
+              ParameterKey="<< pipeline.parameters.workflow-id >>", ParameterValue=<< pipeline.parameters.workflow-id >>, UsePreviousValue=false
             # aws cloudformation deploy \
             #   --template-file .circleci/files/cloudfront.yml \
             #   --stack-name "udapeople-cloudfront" \
