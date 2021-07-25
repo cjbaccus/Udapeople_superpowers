@@ -165,7 +165,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/backend.yml \
               --tags project=your-tag \
-              --stack-name "udapeople-backend-<< pipeline.parameters.workflow-id >>" \
+              --stack-name "udapeople-backend-jsggbl8j7u6xhmny" \
               --parameter-overrides ID="<< pipeline.parameters.workflow-id >>"  
       - run:
           name: Ensure front-end infrastructure exist
@@ -173,7 +173,7 @@ jobs:
             aws cloudformation deploy \
               --template-file .circleci/files/frontend.yml \
               --tags project=your-tag \
-              --stack-name "udapeople-frontend-<< pipeline.parameters.workflow-id >>" \
+              --stack-name "udapeople-frontend-jsggbl8j7u6xhmny" \
               --parameter-overrides ID="<< pipeline.parameters.workflow-id >>"  
       - run:
           name: Add back-end ip to ansible inventory
@@ -206,7 +206,7 @@ jobs:
       - run:
           name: Configure server
           command: |
-            echo ENVIRONMENT=production > "backedn/.env"
+            echo ENVIRONMENT=production > "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> "backend/.env"
             echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
             echo TYPEORM_MIGRATIONS=./src/migrations/*.ts >> "backend/.env"
