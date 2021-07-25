@@ -14,4 +14,8 @@
     npm audit fix && npm run build
     cd dist
     echo `pwd` >> ansible-test.txt
+<<<<<<< HEAD
     pm2 start npm --name backend -- start
+=======
+    pm2 start npm --name backend -- start
+>>>>>>> bfbf72eeb6f1fd722fafb06132b126b4c58d2b5f
