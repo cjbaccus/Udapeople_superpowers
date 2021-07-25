@@ -486,7 +486,7 @@ jobs:
               export OldWorkflowID=$(curl -H "token: << pipeline.parameters.memstash-token >>" --request GET https://api.memstash.io/values/old_workflow_id_${CIRCLE_WORKFLOW_ID})
               echo "Old Workflow ID: ${OldWorkflowID}"
 
-              export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StanckName --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+              export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StanckName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
               echo ${STACKS}
 
               if [ "${OldWorkflowID}" != "<< pipeline.parameters.workflow-id >>" ]
