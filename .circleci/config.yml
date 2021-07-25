@@ -446,29 +446,30 @@ jobs:
       - run:
           name: Update cloudfront distribution
           command: |
-            export OLD_WORKFLOW_ID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
+             export AWS_PAGER=""
+             
+             export OldWorkflowID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" \
               --no-paginate --output text)
-            export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
-            curl -H "Content-Type: text/plain" -H "token: << pipeline.parameters.memstash-token >>" --request PUT --data "${OLD_WORKFLOW_ID}"https://api.memstash.io/values/workflow_id
-            echo Old Workflow Id: ${OLD_WORKFLOW_ID}
-            echo Actual Workflow Id: ${CIRCLE_WORKFLOW_ID}
-            echo Stacks available: ${STACKS}
-            aws cloudformation deploy \
-              --template-file .circleci/files/cloudfront.yml \
-              --stack-name production-distro \
-              --region ${AWS_DEFAULT_REGION} \
-              --parameter-overrides WorkflowID=${CIRCLE_WORKFLOW_ID} \
-              --tags project=udapeople
-            # aws cloudformation update-stack \
-            # --use-previous-template \
-            # --stack-name udapeople-cloudfront \
-            # --parameters 
-            #   ParameterKey="<< pipeline.parameters.workflow-id >>", ParameterValue=<< pipeline.parameters.workflow-id >>, UsePreviousValue=false
-            # aws cloudformation deploy \
-            #   --template-file .circleci/files/cloudfront.yml \
-            #   --stack-name "udapeople-cloudfront" \
-            #   --parameter-overrides WorkflowID="<< pipeline.parameters.workflow-id >>" \
-            #   --tags project=udapeople
+            
+             export STACKS=($(aws cloudformation list-stacks --query "StackSummaries[*].StackName" \
+               --stack-status-filter CREATE_COMPLETE --no-paginate --output text))
+             
+             echo Old Workflow Id: "${OldWorkflowID}"
+             aws cloudformation deploy \
+                  --template-file .circleci/files/cloudfront.yml \
+                  --stack-name "udapeople-cloudfront"  \
+                  --parameter-overrides WorkflowID="${CIRCLE_WORKFLOW_ID}" \
+                  --tags project=Udapeople 
+             if [ ! -z "${OldWorkflowID}" ]
+             then
+                  # your code here
+                  echo "Cleaning old stack"
+                  aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive --quiet
+                  aws cloudformation delete-stack --stack-name "udapeople-front-end-${OldWorkflowID}"
+                  aws cloudformation delete-stack --stack-name "udapeople-back-end-${OldWorkflowID}"
+                  echo "Finished cleaning previous stack"
+             fi
+                 
       - revert-migrations
       - destroy-environment
 
