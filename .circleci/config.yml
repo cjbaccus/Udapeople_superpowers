@@ -7,9 +7,9 @@ parameters:
   workflow-id:
     type: string
     default: "${CIRCLE_WORKFLOW_ID}"
-  # memstash-token:
-  #   type: string
-  #   default: ""
+  memstash-token:
+    type: string
+    default: "91b68998-2d69-4b31-93c2-4f3f42925a80"
 commands:
   destroy-environment:
     description: Destroy back-end and front-end cloudformation stacks given a workflow ID.
