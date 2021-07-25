@@ -123,7 +123,9 @@ jobs:
           name: Front-end security scan
           command: | 
             cd frontend
-            npm audit --audit-level=critical
+            npm install
+            npm audit --audit-level=critical --force
+
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -142,7 +144,8 @@ jobs:
           name: Back-end security scan
           command: | 
             cd backend
-            npm audit --audit-level=critical
+            npm install
+            npm audit --audit-level=critical --force
       - slack/notify:
           event: fail
           template: basic_fail_1
