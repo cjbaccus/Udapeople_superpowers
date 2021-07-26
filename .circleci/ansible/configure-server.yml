@@ -30,8 +30,8 @@
       become: true
       raw: test -e /usr/bin/python3 || (apt -y update && apt install -y python3)
       ignore_errors: true
-      # changed_when: false
-      #   return 0
+      changed_when: false
+
 
   roles:
     - configure-server
