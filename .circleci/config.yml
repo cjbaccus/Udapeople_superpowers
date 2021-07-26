@@ -493,7 +493,7 @@ jobs:
               if [ "${OldWorkflowID}" != "<< pipeline.parameters.workflow-id >>" ]
               then
                 echo "Cleaning up old junk"
-                aws s3 rm "s3://udapeople-jsggbl8j7u6xhmny" --recursive
+                aws s3 rm "s3://udapeople-${OldWorkflowID}" --recursive --quiet
                 aws cloudformation 
                 # aws cloudformation delete-stack --stack-name "udapeople-backend-${OldWorkflowID}"
                 # aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
