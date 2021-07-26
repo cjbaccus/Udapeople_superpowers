@@ -208,6 +208,7 @@ jobs:
           command: |
             apk add --update ansible
             apk add curl
+            apk add JQ
             cat .circleci/ansible/inventory.txt
       - run:
           name: Configure server
@@ -342,6 +343,8 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible openssh-client tar gzip
+            apk add curl
+            apk add JQ
       # - restore_cache:
       #     keys: ["backend-dist"]
       - run:
@@ -389,6 +392,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update curl
+            apk add --update JQ
       - attach_workspace:
           at: ~/
       - run:
@@ -441,6 +445,7 @@ jobs:
           command: |
             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
             apk add --update curl
+            apk add --update JQ
       - run:
           name: Update cloudfront distribution
           command: |
