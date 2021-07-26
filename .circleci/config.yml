@@ -187,7 +187,13 @@ jobs:
           paths:
             - project/.circleci/ansible/inventory.txt
       - destroy-environment     
-
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+          
   configure-infrastructure:
     docker:
       - image: python:3.7-alpine3.11
@@ -201,7 +207,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
-            apk install curl
+            apk add curl
             cat .circleci/ansible/inventory.txt
       - run:
           name: Configure server
@@ -232,6 +238,7 @@ jobs:
       - slack/notify:
           event: pass
           template: success_tagged_deploy_1
+          
   run-migrations:
     docker:
       - image: circleci/node:13.8.0
@@ -272,7 +279,13 @@ jobs:
               https://api.memstash.io/values/migration_${CIRCLE_WORKFLOW_ID}
       - revert-migrations
       - destroy-environment   
-
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+          
   deploy-frontend:
     docker:
       - image: circleci/node:13.8.0
@@ -309,7 +322,13 @@ jobs:
             aws s3 cp --recursive frontend/dist "s3://udapeople-jsggbl8j7u6xhmny"
       - revert-migrations
       - destroy-environment
-                    
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+          
   deploy-backend:
     docker:
       - image: python:3.7-alpine3.11
@@ -354,7 +373,13 @@ jobs:
             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
       - revert-migrations
       - destroy-environment 
-
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+          
   smoke-test:
     docker:
       - image: python:3.7-alpine3.11 
@@ -399,7 +424,13 @@ jobs:
             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
       - revert-migrations
       - destroy-environment
-
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+          
   cloudfront-update:
     docker:
       - image: python:3.7-alpine3.11 
@@ -439,7 +470,13 @@ jobs:
                  
       - revert-migrations
       - destroy-environment
-
+      - slack/notify:
+          event: fail
+          template: basic_fail_1
+      - slack/notify:
+          event: pass
+          template: success_tagged_deploy_1
+          
   cleanup:
       docker:
         - image: cimg/base:2020.01
@@ -465,7 +502,12 @@ jobs:
                 # aws cloudformation delete-stack --stack-name "udapeople-frontend-${OldWorkflowID}"
                 echo "Finished cleaning old stacks"
               fi
-
+        - slack/notify:
+            event: fail
+            template: basic_fail_1
+        - slack/notify:
+            event: pass
+            template: success_tagged_deploy_1
             
 
 workflows:
