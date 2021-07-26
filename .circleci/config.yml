@@ -207,8 +207,8 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update ansible
-            apk add curl
-            apk add JQ
+            apk add --update curl
+            #apk add JQ
             cat .circleci/ansible/inventory.txt
       - run:
           name: Configure server
@@ -233,12 +233,12 @@ jobs:
           command: | 
             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
       - destroy-environment
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          event: pass
-          template: success_tagged_deploy_1
+#      - slack/notify:
+#          event: fail
+#          template: basic_fail_1
+#      - slack/notify:
+#          event: pass
+#          template: success_tagged_deploy_1
           
   run-migrations:
     docker:
@@ -344,7 +344,7 @@ jobs:
           command: |
             apk add --update ansible openssh-client tar gzip
             apk add curl
-            apk add JQ
+            # apk add JQ
       # - restore_cache:
       #     keys: ["backend-dist"]
       - run:
@@ -363,12 +363,12 @@ jobs:
             ansible-playbook \
               -i .circleci/ansible/inventory.txt \
               .circleci/ansible/deploy-backend.yml
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          event: pass
-          template: success_tagged_deploy_1
+#      - slack/notify:
+#          event: fail
+#          template: basic_fail_1
+#      - slack/notify:
+#          event: pass
+#          template: success_tagged_deploy_1
       - run:
           name: Install AWS CLI for rollback
           when: on_fail
@@ -376,12 +376,12 @@ jobs:
             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
       - revert-migrations
       - destroy-environment 
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          event: pass
-          template: success_tagged_deploy_1
+#      - slack/notify:
+#          event: fail
+#          template: basic_fail_1
+#      - slack/notify:
+#          event: pass
+#          template: success_tagged_deploy_1
           
   smoke-test:
     docker:
@@ -392,7 +392,7 @@ jobs:
           name: Install dependencies
           command: |
             apk add --update curl
-            apk add --update JQ
+#            apk add --update JQ
       - attach_workspace:
           at: ~/
       - run:
@@ -428,12 +428,12 @@ jobs:
             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
       - revert-migrations
       - destroy-environment
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          event: pass
-          template: success_tagged_deploy_1
+#      - slack/notify:
+#          event: fail
+#          template: basic_fail_1
+#      - slack/notify:
+#          event: pass
+#          template: success_tagged_deploy_1
           
   cloudfront-update:
     docker:
@@ -445,7 +445,7 @@ jobs:
           command: |
             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
             apk add --update curl
-            apk add --update JQ
+#            apk add --update JQ
       - run:
           name: Update cloudfront distribution
           command: |
@@ -475,12 +475,12 @@ jobs:
                  
       - revert-migrations
       - destroy-environment
-      - slack/notify:
-          event: fail
-          template: basic_fail_1
-      - slack/notify:
-          event: pass
-          template: success_tagged_deploy_1
+#      - slack/notify:
+#          event: fail
+#          template: basic_fail_1
+#      - slack/notify:
+#          event: pass
+#          template: success_tagged_deploy_1
           
   cleanup:
       docker:
