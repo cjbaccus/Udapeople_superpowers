@@ -18,7 +18,7 @@ commands:
           name: Destroy environments
           when: on_fail
           command: |
-            aws s3 rm --recursive s3://udapeople-jsggbl8j7u6xhmny
+            # aws s3 rm --recursive s3://udapeople-jsggbl8j7u6xhmny
             aws cloudformation delete-stack --stack-name "udapeople-backend-<< pipeline.parameters.workflow-id >>"
             aws cloudformation delete-stack --stack-name "udapeople-frontend-<< pipeline.parameters.workflow-id >>"
 
