@@ -268,7 +268,7 @@ jobs:
             sudo npm run build
             sudo npm run migrations > migration.log
             cat migration.log
-            ## cat /root/.npm/_logs/2021-07-25*.log
+            at /root/.npm/_logs/2021-07-28*.log
             migration_status=$(cat migration.log | grep -c "has been executed successfully")
             if [ $migration_status > 0 ]; then exit 0; else exit 0; fi;
       - run:
