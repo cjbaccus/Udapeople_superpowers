@@ -281,7 +281,7 @@ jobs:
       - revert-migrations
       - destroy-environment   
       - slack/notify:
-          event: fail
+          event: fail 
           template: basic_fail_1
       - slack/notify:
           event: pass
