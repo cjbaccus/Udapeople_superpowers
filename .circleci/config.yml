@@ -448,7 +448,7 @@ jobs:
       - run:
           name: Store old workflow in memstash
           command: |
-            WorkflowID=$(aws cloudformation list-exports --query "Exports[?Name==\'WorkflowID\'].Value" --no-paginate --output text)
+            WorkflowID=$(aws cloudformation list-exports --query "Exports[?Name=='WorkflowID'].Value" --no-paginate --output text)
             curl -H "Content-Type: text/plain" -H "token: ${MEMSTASH_TOKEN}" --request PUT --data "$WorkflowID" https://api.memstash.io/oldWorkflowID
 
             #  export AWS_PAGER=""
