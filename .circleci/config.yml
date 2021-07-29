@@ -474,7 +474,7 @@ jobs:
             cd infra/web
             aws cloudformation deploy --template-file cloudfront.yml \
               --stack-name udapeople-cloudfront \
-              --parameter-overrides ID="{CIRCLE_WORKFLOW_ID" \
+              --parameter-overrides ID="{CIRCLE_WORKFLOW_ID}" \
               --tags myproject=udapeople
                          
       - revert-migrations
