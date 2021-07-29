@@ -471,7 +471,7 @@ jobs:
       - run:
           name: Update cf dist
           command: | 
-            cd infra/web
+            cd web/
             aws cloudformation deploy --template-file cloudfront.yml \
               --stack-name udapeople-cloudfront \
               --parameter-overrides ID="{CIRCLE_WORKFLOW_ID}" \
