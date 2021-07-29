@@ -4,9 +4,9 @@ Parameters:
   ID:
     Description: Unique identifier.
     Type: String
-    Default: 999hadvhgchjesr
+    Default: jsggbl8j7u6xhmny
   Region:
-    Description: Region for Cloudfront Origin. Especially so, for S3 Bucket Origins
+    Description: Region for Cloudfront and S3
     Type: String
     Default: us-east-1
 
@@ -16,7 +16,7 @@ Resources:
     Type: "AWS::CloudFront::CloudFrontOriginAccessIdentity"
     Properties:
       CloudFrontOriginAccessIdentityConfig:
-        Comment: Origin Access Identity for Serverless Static Website
+        Comment: Access identity for serverless website
 
   WebpageCDN:
     Type: AWS::CloudFront::Distribution
