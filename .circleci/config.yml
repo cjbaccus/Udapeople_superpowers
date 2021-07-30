@@ -186,7 +186,7 @@ jobs:
           root: ~/
           paths:
             - project/.circleci/ansible/inventory.txt
-      - destroy-environment     
+      # - destroy-environment     
       - slack/notify:
           event: fail
           template: basic_fail_1
@@ -232,7 +232,7 @@ jobs:
           when: on_fail
           command: | 
             apk add --update py3-pip && pip3 install --upgrade pip && pip3 install awscli
-      - destroy-environment
+      # - destroy-environment
 
           
   run-migrations:
@@ -258,7 +258,6 @@ jobs:
             cat backend/.env
             # ---
             cd backend
-            npm cache clean --force
             npm install
             npm audit fix --audit-level=critical --force
             # npm audit fix
@@ -292,6 +291,8 @@ jobs:
             cd frontend
             sudo npm install webpack-dev-server -g
             sudo npm install
+      - restore_cache:
+          keys: ["frontend-dist"]
       - run:
           name: Get backend url
           command: |
@@ -337,8 +338,8 @@ jobs:
             apk add --update ansible openssh-client tar gzip
             apk add curl
             # apk add JQ
-      # - restore_cache:
-      #     keys: ["backend-dist"]
+      - restore_cache:
+          keys: ["backend-dist"]
       - run:
           name: Deploy backend
           command: |
