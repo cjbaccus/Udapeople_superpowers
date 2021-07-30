@@ -420,9 +420,9 @@ jobs:
       - run:
           name: Store old workflow in memstash
           command: |
-            WorkflowID=$(aws cloudformation list-exports --query "Exports[?Name==\'WorkflowID\'].Value" --no-paginate --output text)
-            curl -H "Content-Type: text/plain" -H "token: ${MEMSTASH_TOKEN}" --request PUT --data "$WorkflowID" https://api.memstash.io/oldWorkflowID
-
+            WorkflowID=$(aws cloudformation list-exports --query "Exports[?Name=='WorkflowID'].Value" --no-paginate --output text)
+            curl -H "Content-Type: text/plain" -H "token: << pipeline.parameters.memstash-token >>" --request GET https://api.memstash.io/values/oldWorkflowID_${CIRCLE_WORKFLOW_ID}
+            # export OldWorkflowID=$(curl -H "token: << pipeline.parameters.memstash-token >>" --request GET https://api.memstash.io/values/old_workflow_id_${CIRCLE_WORKFLOW_ID})
             #  export AWS_PAGER=""
              
             #  export OldWorkflowID=$(aws cloudformation list-exports --query "Exports[?Name==\`WorkflowID\`].Value" --no-paginate --output text)
@@ -443,10 +443,10 @@ jobs:
       - run:
           name: Update cf dist
           command: | 
-            cd infra/web
+            cd web/
             aws cloudformation deploy --template-file cloudfront.yml \
               --stack-name udapeople-cloudfront \
-              --parameter-overrides ID="{CIRCLE_WORKFLOW_ID" \
+              --parameter-overrides ID="{CIRCLE_WORKFLOW_ID}" \
               --tags myproject=udapeople
 
       - revert-migrations
@@ -526,4 +526,4 @@ workflows:
       - cloudfront-update:
           requires: [smoke-test]
       - cleanup:
-          requires: [smoke-test]
+          requires: [cloudfront-update]
