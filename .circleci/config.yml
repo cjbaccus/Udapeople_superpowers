@@ -264,10 +264,10 @@ jobs:
             # npm audit fix
             sudo npm run build
             sudo npm run migrations > migration.log
-            # cat migration.log
-            cat /root/.npm/_logs/2021-07-30*.log
+            cat migration.log
+            # cat /root/.npm/_logs/2021-07-30*.log
             migration_status=$(cat migration.log | grep -c "has been executed successfully")
-            if [ $migration_status > 0 ]; then exit 0; else exit 0; fi;
+            if [ $migration_status > 0 ]; then exit 0; else exit 1; fi;
       - run:
           name: Send migration results to memstash
           command: |
