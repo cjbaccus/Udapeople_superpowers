@@ -237,13 +237,14 @@ jobs:
           
   run-migrations:
     docker:
-      - image: circleci/node:13.8.0
+      - image: cimg/node:12.22.1
     steps:
       - checkout
       - aws-cli/setup
       - run:
           name: Run migrations 
           command: |
+            ls -la backend/
             echo ENVIRONMENT=production > "backend/.env"
             echo TYPEORM_CONNECTION=postgres >> "backend/.env"
             echo TYPEORM_ENTITIES=./src/modules/domain/**/*.entity.ts >> "backend/.env"
@@ -258,7 +259,7 @@ jobs:
             cat backend/.env
             # ---
             cd backend
-            sudo npm cache clean --force
+            # sudo npm cache clean --force
             sudo npm install
             npm audit fix --audit-level=critical --force
             # npm audit fix
