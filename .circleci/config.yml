@@ -155,10 +155,13 @@ jobs:
 
   deploy-infrastructure:
     docker:
-      - image: cimg/base:2020.01
+      - image: amazon/aws-cli
     steps:
       - checkout
-      - aws-cli/setup
+      #- aws-cli/setup
+      - run:
+          name: Install Dependancies
+          command: yum install -y tar gzip
       - run:
           name: Ensure back-end infrastructure exists 
           command: |
@@ -167,6 +170,16 @@ jobs:
               --tags project=your-tag \
               --stack-name "udapeople-backend-<< pipeline.parameters.workflow-id >>" \
               --parameter-overrides ID="<< pipeline.parameters.workflow-id >>"  
+      - run:
+          name: Backend save to memstash
+          command: |
+            export BACKEND_IP=$(aws ec2 describe-instances --query 'Reservations[*].Instances[*]PublicIpAddress' \
+              --filters "Name=tag:project,Values=udapeople-backend-<< pipeline.parameters.workflow-id >>" --output text)
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo API_URL="http://${BACKEND_IP}:3030" >> "frontend/.env"
+            cat frontend/.env
+            curl -H "Content-Type: text/plain" -H "token: 91b68998-2d69-4b31-93c2-4f3f42925a80" --request PUT --data "http://$BACKEND_IP:3030" https://api.memstash.io/values/BACKEND_URL
+
       - run:
           name: Ensure front-end infrastructure exist
           command: |
@@ -200,7 +213,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["	17:96:e2:d9:35:5d:5d:b5:80:64:fb:0c:15:9c:82:b7"]
+          fingerprints: ["17:96:e2:d9:35:5d:5d:b5:80:64:fb:0c:15:9c:82:b7"]
       - attach_workspace:
           at: ~/
       - run:
@@ -330,7 +343,7 @@ jobs:
     steps:
       - checkout
       - add_ssh_keys:
-          fingerprints: ["	17:96:e2:d9:35:5d:5d:b5:80:64:fb:0c:15:9c:82:b7"]
+          fingerprints: ["17:96:e2:d9:35:5d:5d:b5:80:64:fb:0c:15:9c:82:b7"]
       - attach_workspace:
           at: ~/
       - run:
