@@ -259,6 +259,7 @@ jobs:
             cat backend/.env
             # ---
             cd backend
+            cat .env
             # sudo npm cache clean --force
             sudo npm install
             npm audit fix --audit-level=critical --force
